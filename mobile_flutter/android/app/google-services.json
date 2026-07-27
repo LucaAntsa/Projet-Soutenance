@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "509560948505",
+    "project_id": "education-familiale-fire-6f7f2",
+    "storage_bucket": "education-familiale-fire-6f7f2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509560948505:android:996142e44948ed4ea26788",
+        "android_client_info": {
+          "package_name": "com.example.mobile_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGRc4FDKIm1TM0Z0RXdECw128kjZlLkXo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
