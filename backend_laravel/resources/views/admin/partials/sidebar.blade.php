@@ -31,205 +31,330 @@
 @endphp
 
 <style>
+    :root {
+        --app-primary: #2563EB;
+        --app-primary-dark: #1E40AF;
+        --app-secondary: #14B8A6;
+        --app-accent: #F59E0B;
+        --app-success: #22C55E;
+        --app-danger: #EF4444;
+        --app-info: #0EA5E9;
+        --app-purple: #9333EA;
+        --app-purple-dark: #7C3AED;
+        --app-orange: #F97316;
+
+        --app-bg: #F8FAFC;
+        --app-dark-bg: #0F172A;
+        --app-card: #FFFFFF;
+        --app-dark-card: #1E293B;
+        --app-text: #0F172A;
+        --app-muted: #64748B;
+        --app-muted-dark: #CBD5E1;
+        --app-border: #E2E8F0;
+        --app-border-dark: #334155;
+    }
+
+    body {
+        font-size: 15px;
+        background: var(--app-bg);
+    }
+
+    .admin-main,
+    main {
+        min-height: 100vh;
+        background: var(--app-bg);
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes softPulse {
+        0% {
+            box-shadow: 0 0 0 rgba(37, 99, 235, 0.0);
+        }
+
+        50% {
+            box-shadow: 0 0 22px rgba(37, 99, 235, 0.24);
+        }
+
+        100% {
+            box-shadow: 0 0 0 rgba(37, 99, 235, 0.0);
+        }
+    }
+
     @if($theme === 'dark')
         body,
         .bg-light,
         .admin-main,
         main {
-            background: #0f172a !important;
-            color: #f8fafc !important;
+            background: var(--app-dark-bg) !important;
+            color: #F8FAFC !important;
         }
 
         .card,
-        .admin-card {
-            background: #1e293b !important;
-            color: #f8fafc !important;
-            border-color: #334155 !important;
+        .admin-card,
+        .content-card,
+        .mini-stat-card,
+        .chart-card,
+        .quick-card {
+            background: var(--app-dark-card) !important;
+            color: #F8FAFC !important;
+            border-color: var(--app-border-dark) !important;
         }
 
         .text-muted {
-            color: #cbd5e1 !important;
+            color: var(--app-muted-dark) !important;
         }
 
         .table,
         .table td,
         .table th {
-            background: #1e293b !important;
-            color: #f8fafc !important;
-            border-color: #334155 !important;
+            background: var(--app-dark-card) !important;
+            color: #F8FAFC !important;
+            border-color: var(--app-border-dark) !important;
         }
 
         .table-light th {
-            background: #334155 !important;
-            color: #f8fafc !important;
+            background: var(--app-border-dark) !important;
+            color: #F8FAFC !important;
         }
 
         .form-control,
         .form-select,
         textarea {
-            background: #0f172a !important;
-            color: #f8fafc !important;
-            border-color: #334155 !important;
+            background: var(--app-dark-bg) !important;
+            color: #F8FAFC !important;
+            border-color: var(--app-border-dark) !important;
         }
     @endif
 
     .admin-sidebar {
-        background: linear-gradient(180deg, #0f172a 0%, #111827 45%, #1e1b4b 100%);
+        background: linear-gradient(
+            180deg,
+            var(--app-dark-bg) 0%,
+            #111827 48%,
+            var(--app-primary-dark) 100%
+        );
         min-height: 100vh;
-        padding: 18px 14px;
-        box-shadow: 8px 0 30px rgba(15, 23, 42, 0.18);
+        padding: 16px 12px;
+        box-shadow: 8px 0 26px rgba(15, 23, 42, 0.16);
     }
 
     .admin-logo {
-        background: linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.05));
-        border: 1px solid rgba(255,255,255,0.10);
-        border-radius: 22px;
-        padding: 18px 14px;
-        margin-bottom: 24px;
+        background: linear-gradient(
+            135deg,
+            rgba(37, 99, 235, 0.18),
+            rgba(20, 184, 166, 0.12)
+        );
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 18px;
+        padding: 14px 12px;
+        margin-bottom: 20px;
+        animation: fadeUp 0.45s ease both;
     }
 
     .admin-logo-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #8b5cf6, #2563eb);
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--app-primary), var(--app-secondary));
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 23px;
-        margin-bottom: 12px;
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+        font-size: 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.32);
     }
 
     .admin-logo-title {
         color: #ffffff;
         font-weight: 800;
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.35;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
     }
 
     .admin-logo-subtitle {
-        color: #cbd5e1;
+        color: var(--app-muted-dark);
         font-size: 12px;
     }
 
     .admin-role-badge {
         background: rgba(245, 158, 11, 0.18);
-        color: #fbbf24;
+        color: #FBBF24;
         border: 1px solid rgba(245, 158, 11, 0.25);
         border-radius: 999px;
-        padding: 5px 12px;
-        font-size: 12px;
+        padding: 4px 10px;
+        font-size: 11px;
         font-weight: 700;
         display: inline-block;
-        margin-top: 12px;
+        margin-top: 10px;
     }
 
     .admin-nav-title {
-        color: #64748b;
-        font-size: 11px;
+        color: #94A3B8;
+        font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin: 0 0 10px 10px;
+        margin: 0 0 8px 8px;
     }
 
     .admin-nav-link {
-        color: #cbd5e1;
-        border-radius: 16px;
-        padding: 12px 14px;
-        margin-bottom: 8px;
+        color: var(--app-muted-dark);
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin-bottom: 7px;
+        font-size: 15px;
         font-weight: 600;
         transition: all 0.22s ease;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         text-decoration: none;
+        animation: fadeUp 0.42s ease both;
     }
 
     .admin-nav-link span:first-child {
-        width: 28px;
-        height: 28px;
-        border-radius: 10px;
+        width: 26px;
+        height: 26px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255,255,255,0.08);
+        font-size: 15px;
+        transition: all 0.22s ease;
     }
 
     .admin-nav-link:hover {
-        background: rgba(37, 99, 235, 0.18);
         color: #ffffff;
         transform: translateX(4px);
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .admin-nav-link.active {
-        background: linear-gradient(135deg, #2563eb, #7c3aed);
         color: #ffffff;
-        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+        animation: softPulse 2.2s ease infinite;
     }
 
-    .admin-logout-btn {
-        border: none;
-        border-radius: 16px;
-        padding: 12px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        box-shadow: 0 10px 20px rgba(220, 38, 38, 0.25);
+    .admin-sidebar .nav-item:nth-child(1) .admin-nav-link span:first-child {
+        background: rgba(37, 99, 235, 0.18);
+        color: #60A5FA;
     }
 
-    .admin-logout-btn:hover {
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
+    .admin-sidebar .nav-item:nth-child(2) .admin-nav-link span:first-child {
+        background: rgba(37, 99, 235, 0.18);
+        color: #93C5FD;
+    }
+
+    .admin-sidebar .nav-item:nth-child(3) .admin-nav-link span:first-child {
+        background: rgba(245, 158, 11, 0.18);
+        color: #FBBF24;
+    }
+
+    .admin-sidebar .nav-item:nth-child(4) .admin-nav-link span:first-child {
+        background: rgba(147, 51, 234, 0.18);
+        color: #C084FC;
+    }
+
+    .admin-sidebar .nav-item:nth-child(5) .admin-nav-link span:first-child {
+        background: rgba(34, 197, 94, 0.18);
+        color: #4ADE80;
+    }
+
+    .admin-sidebar .nav-item:nth-child(1) .admin-nav-link.active {
+        background: linear-gradient(135deg, var(--app-primary), var(--app-secondary));
+    }
+
+    .admin-sidebar .nav-item:nth-child(2) .admin-nav-link.active {
+        background: linear-gradient(135deg, var(--app-primary), #1D4ED8);
+    }
+
+    .admin-sidebar .nav-item:nth-child(3) .admin-nav-link.active {
+        background: linear-gradient(135deg, var(--app-accent), var(--app-orange));
+    }
+
+    .admin-sidebar .nav-item:nth-child(4) .admin-nav-link.active {
+        background: linear-gradient(135deg, var(--app-purple-dark), var(--app-purple));
+    }
+
+    .admin-sidebar .nav-item:nth-child(5) .admin-nav-link.active {
+        background: linear-gradient(135deg, var(--app-success), var(--app-secondary));
     }
 
     .admin-page-header {
-        background: linear-gradient(135deg, #8b1ee8, #a334f3);
+        background: linear-gradient(135deg, var(--app-primary), var(--app-secondary));
         color: #ffffff;
-        border-radius: 26px;
-        padding: 30px 34px;
-        margin-bottom: 28px;
+        border-radius: 24px;
+        padding: 22px 26px;
+        margin-bottom: 22px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 20px;
-        box-shadow: 0 18px 40px rgba(124, 58, 237, 0.25);
+        gap: 18px;
+        box-shadow: 0 14px 34px rgba(37, 99, 235, 0.20);
+        animation: fadeUp 0.5s ease both;
     }
 
     .admin-page-header h1 {
         margin: 0;
-        font-size: 32px;
+        font-size: 26px;
         font-weight: 800;
         color: #ffffff;
     }
 
     .admin-page-header p {
-        margin: 8px 0 0;
-        color: rgba(255,255,255,0.92);
-        font-size: 16px;
+        margin: 5px 0 0;
+        color: rgba(255,255,255,0.90);
+        font-size: 14px;
     }
 
     .admin-header-actions {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
         justify-content: flex-end;
     }
 
     .admin-toggle-group {
         display: flex;
-        gap: 6px;
-        padding: 5px;
+        align-items: center;
+        gap: 5px;
+        padding: 4px;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.18);
         backdrop-filter: blur(8px);
     }
 
-    .admin-toggle-btn {
+    .admin-toggle-btn,
+    .admin-back-btn,
+    .admin-logout-top-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
         text-decoration: none;
+    }
+
+    .admin-btn-icon {
+        font-size: 14px;
+        line-height: 1;
+    }
+
+    .admin-toggle-btn {
         border-radius: 999px;
-        padding: 8px 16px;
+        padding: 7px 12px;
         font-size: 12px;
         font-weight: 800;
         color: #ffffff;
@@ -239,27 +364,52 @@
     .admin-toggle-btn:hover {
         background: rgba(255, 255, 255, 0.18);
         color: #ffffff;
+        transform: translateY(-1px);
     }
 
     .admin-toggle-btn.active {
         background: #ffffff;
-        color: #2563eb;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+        color: var(--app-primary);
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.16);
     }
 
     .admin-back-btn {
-        text-decoration: none;
         background: #ffffff;
-        color: #1f2937;
-        padding: 14px 22px;
-        border-radius: 16px;
+        color: var(--app-text);
+        padding: 11px 16px;
+        border-radius: 14px;
+        font-size: 14px;
         font-weight: 800;
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+        transition: all 0.2s ease;
     }
 
     .admin-back-btn:hover {
-        color: #111827;
-        background: #f8fafc;
+        color: var(--app-primary);
+        background: #F8FAFC;
+        transform: translateY(-1px);
+    }
+
+    .admin-logout-top-form {
+        margin: 0;
+    }
+
+    .admin-logout-top-btn {
+        border: none;
+        background: linear-gradient(135deg, var(--app-danger), #DC2626);
+        color: #ffffff;
+        padding: 11px 16px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.22);
+        transition: all 0.2s ease;
+    }
+
+    .admin-logout-top-btn:hover {
+        background: linear-gradient(135deg, #DC2626, #B91C1C);
+        color: #ffffff;
+        transform: translateY(-1px);
     }
 
     @media (max-width: 767px) {
@@ -271,7 +421,11 @@
         .admin-page-header {
             flex-direction: column;
             align-items: flex-start;
-            padding: 24px;
+            padding: 20px;
+        }
+
+        .admin-page-header h1 {
+            font-size: 23px;
         }
 
         .admin-header-actions {
@@ -347,13 +501,5 @@
         @endif
 
     </ul>
-
-    <form action="{{ route('admin.logout') }}" method="POST" class="mt-4">
-        @csrf
-
-        <button type="submit" class="btn btn-danger w-100 admin-logout-btn">
-            {{ $t['logout'] }}
-        </button>
-    </form>
 
 </div>

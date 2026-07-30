@@ -222,14 +222,15 @@
 
         <main class="col-md-10 p-4 admin-main">
 
-            <div class="page-header">
-                <h1 class="page-title">
-                    {{ $t['header_title'] }}
-                </h1>
+            <div class="admin-page-header">
+                <div>
+                    <h1>{{ $t['header_title'] ?? 'Ajouter un quiz' }}</h1>
+                    <p>{{ $t['header_subtitle'] ?? 'Création d’un nouveau quiz éducatif.' }}</p>
+                </div>
 
-                <p class="page-subtitle">
-                    {{ $t['header_subtitle'] }}
-                </p>
+            @include('admin.partials.header-actions', [
+                'backUrl' => route('admin.quizzes.index')
+                ])
             </div>
 
             @if($errors->any())

@@ -255,14 +255,13 @@
 
         <main class="col-md-10 p-4 admin-main">
 
-            <div class="page-header">
-                <h1 class="page-title">
-                    {{ $t['users_title'] }}
-                </h1>
+            <div class="admin-page-header">
+                <div>
+                    <h1>{{ $t['users_title'] ?? 'Utilisateurs' }}</h1>
+                    <p>{{ $t['users_subtitle'] ?? 'Gestion des comptes utilisateurs de la plateforme.' }}</p>
+                </div>
 
-                <p class="page-subtitle">
-                    {{ $t['users_subtitle'] }}
-                </p>
+                @include('admin.partials.header-actions')
             </div>
 
             @if(session('success'))

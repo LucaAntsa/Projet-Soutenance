@@ -1,0 +1,346 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.72)),
+        url('/images/auth-family-bg.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 26px;
+    align-items: stretch;
+}
+
+.auth-video-box,
+.auth-form-box {
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    animation: fadeUp 0.7s ease both;
+}
+
+.auth-video-box {
+    color: #0F172A;
+    overflow: hidden;
+    position: relative;
+}
+
+.auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #DBEAFE;
+    color: #2563EB;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.auth-video-box h1 {
+    font-size: 30px;
+    font-weight: 900;
+    margin: 0 0 10px;
+    color: #0F172A;
+}
+
+.auth-video-box p {
+    color: #64748B;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.project-video {
+    height: 255px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #2563EB, #14B8A6);
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
+}
+
+.project-video::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.16);
+    top: -70px;
+    right: -70px;
+    animation: floatCircle 5s ease-in-out infinite;
+}
+
+.project-video::after {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    bottom: -60px;
+    left: -50px;
+    animation: floatCircle 6s ease-in-out infinite reverse;
+}
+
+.video-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 24px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.video-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.video-title {
+    font-weight: 900;
+    font-size: 18px;
+}
+
+.video-play {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: white;
+    color: #2563EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    animation: pulsePlay 1.8s ease-in-out infinite;
+}
+
+.video-family {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: 18px;
+}
+
+.person {
+    width: 54px;
+    height: 90px;
+    border-radius: 28px 28px 14px 14px;
+    background: rgba(255,255,255,0.92);
+    position: relative;
+    animation: floatPerson 2.6s ease-in-out infinite;
+}
+
+.person::before {
+    content: "";
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #F59E0B;
+    position: absolute;
+    top: -24px;
+    left: 10px;
+}
+
+.person.small {
+    width: 42px;
+    height: 68px;
+    animation-delay: 0.25s;
+}
+
+.person.small::before {
+    width: 28px;
+    height: 28px;
+    top: -20px;
+    left: 7px;
+    background: #F97316;
+}
+
+.person.green::before {
+    background: #22C55E;
+}
+
+.video-bottom {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.video-stat {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.22);
+    padding: 10px;
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+}
+
+.video-stat strong {
+    display: block;
+    font-size: 16px;
+}
+
+.video-stat span {
+    font-size: 11px;
+    opacity: 0.9;
+}
+
+.auth-switch-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.auth-switch-btn {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    padding: 13px 16px;
+    border-radius: 16px;
+    font-weight: 800;
+    transition: 0.25s ease;
+}
+
+.auth-switch-btn.login {
+    background: #2563EB;
+    color: white;
+}
+
+.auth-switch-btn.register {
+    background: #F59E0B;
+    color: white;
+}
+
+.auth-switch-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+}
+
+.auth-form-box {
+    animation-delay: 0.12s;
+}
+
+.auth-form-title {
+    font-size: 25px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    color: #0F172A;
+}
+
+.auth-form-subtitle {
+    color: #64748B;
+    margin-bottom: 22px;
+}
+
+.auth-form-box label {
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.auth-form-box input {
+    width: 100%;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 13px 15px;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.auth-form-box input:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.auth-submit-btn {
+    width: 100%;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #2563EB, #14B8A6);
+    color: white;
+    font-weight: 900;
+    margin-top: 12px;
+    transition: 0.25s ease;
+}
+
+.auth-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatCircle {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(18px);
+    }
+}
+
+@keyframes pulsePlay {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes floatPerson {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@media (max-width: 900px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .project-video {
+        height: 230px;
+    }
+}

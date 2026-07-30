@@ -241,23 +241,17 @@
 
         <main class="col-md-10 p-4 admin-main">
 
-            <div class="page-header">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <div>
-                        <h1 class="page-title">
-                            {{ $t['quiz_title'] }}
-                        </h1>
-
-                        <p class="page-subtitle">
-                            {{ $t['quiz_subtitle'] }}
-                        </p>
-                    </div>
-
-                    <a href="{{ route('admin.quizzes.create') }}" class="btn btn-add">
-                        {{ $t['add_quiz'] }}
-                    </a>
+            <div class="admin-page-header">
+                <div>
+                    <h1>{{ $t['quizzes_title'] ?? 'Quiz' }}</h1>
+                    <p>{{ $t['quizzes_subtitle'] ?? 'Gestion des quiz éducatifs de la plateforme.' }}</p>
                 </div>
-            </div>
+
+            @include('admin.partials.header-actions', [
+                'backUrl' => route('admin.quizzes.create'),
+                'backText' => $t['add_quiz'] ?? 'Ajouter un quiz'
+            ])
+        </div>
 
             @if(session('success'))
                 <div class="alert alert-success border-0 shadow-sm rounded-4">

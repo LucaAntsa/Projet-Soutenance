@@ -260,22 +260,16 @@
 
         <main class="col-md-10 p-4 admin-main">
 
-            <div class="page-header">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <div>
-                        <h1 class="page-title">
-                            {{ $t['modules_title'] }}
-                        </h1>
-
-                        <p class="page-subtitle">
-                            {{ $t['modules_subtitle'] }}
-                        </p>
-                    </div>
-
-                    <a href="{{ route('admin.modules.create') }}" class="btn btn-add">
-                        {{ $t['add_module'] }}
-                    </a>
+            <div class="admin-page-header">
+                <div>
+                    <h1>{{ $t['modules_title'] ?? 'Modules éducatifs' }}</h1>
+                    <p>{{ $t['modules_subtitle'] ?? 'Gestion des modules éducatifs de la plateforme.' }}</p>
                 </div>
+
+            @include('admin.partials.header-actions', [
+                'backUrl' => route('admin.modules.create'),
+                'backText' => $t['add_module'] ?? 'Ajouter un module'
+                ])
             </div>
 
             @if(session('success'))

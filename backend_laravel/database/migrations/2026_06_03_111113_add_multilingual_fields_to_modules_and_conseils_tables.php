@@ -10,14 +10,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('module_educatifs', function (Blueprint $table) {
-            $table->string('title_fr')->nullable()->after('title');
-            $table->string('title_mg')->nullable()->after('title_fr');
+            $table->string('title_fr')->nullable();
+            $table->string('title_mg')->nullable();
 
-            $table->text('description_fr')->nullable()->after('description');
-            $table->text('description_mg')->nullable()->after('description_fr');
+            $table->text('description_fr')->nullable();
+            $table->text('description_mg')->nullable();
 
-            $table->longText('content_fr')->nullable()->after('content');
-            $table->longText('content_mg')->nullable()->after('content_fr');
+            $table->longText('content_fr')->nullable();
+            $table->longText('content_mg')->nullable();
         });
 
         DB::table('module_educatifs')->update([
@@ -27,14 +27,14 @@ return new class extends Migration
         ]);
 
         Schema::table('conseils', function (Blueprint $table) {
-            $table->string('title_fr')->nullable()->after('title');
-            $table->string('title_mg')->nullable()->after('title_fr');
+            $table->string('title_fr')->nullable();
+            $table->string('title_mg')->nullable();
 
-            $table->string('theme_fr')->nullable()->after('theme');
-            $table->string('theme_mg')->nullable()->after('theme_fr');
+            $table->string('theme_fr')->nullable();
+            $table->string('theme_mg')->nullable();
 
-            $table->longText('content_fr')->nullable()->after('content');
-            $table->longText('content_mg')->nullable()->after('content_fr');
+            $table->longText('content_fr')->nullable();
+            $table->longText('content_mg')->nullable();
         });
 
         DB::table('conseils')->update([

@@ -278,24 +278,15 @@
 
         <main class="col-md-10 p-4 admin-main">
 
-            <div class="page-header">
-                <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
-                    <div>
-                        <h1 class="page-title">
-                            {{ $quiz->title }}
-                        </h1>
-
-                        <p class="page-subtitle">
-                            {{ $t['header_subtitle'] }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <a href="{{ route('admin.quizzes.index') }}" class="btn-back d-inline-block">
-                            {{ $t['back'] }}
-                        </a>
-                    </div>
+            <div class="admin-page-header">
+                <div>
+                    <h1>{{ $t['quiz_title'] ?? 'éducation familiale' }}</h1>
+                    <p>{{ $t['quiz_subtitle'] ?? 'Gestion des questions et réponses du quiz.' }}</p>
                 </div>
+
+            @include('admin.partials.header-actions', [
+                'backUrl' => route('admin.quizzes.index')
+                ])
             </div>
 
             @if(session('success'))

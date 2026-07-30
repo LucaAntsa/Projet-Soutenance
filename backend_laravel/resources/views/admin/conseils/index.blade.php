@@ -265,22 +265,16 @@
 
         <main class="col-md-10 p-4 admin-main">
 
-            <div class="page-header">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <div>
-                        <h1 class="page-title">
-                            {{ $t['conseils_title'] }}
-                        </h1>
-
-                        <p class="page-subtitle">
-                            {{ $t['conseils_subtitle'] }}
-                        </p>
-                    </div>
-
-                    <a href="{{ route('admin.conseils.create') }}" class="btn btn-add">
-                        {{ $t['add_conseil'] }}
-                    </a>
+            <div class="admin-page-header">
+                <div>
+                    <h1>{{ $t['conseils_title'] }}</h1>
+                    <p>{{ $t['conseils_subtitle'] }}</p>
                 </div>
+
+            @include('admin.partials.header-actions', [
+                'backUrl' => route('admin.conseils.create'),
+                'backText' => $t['add_conseil']
+                ])
             </div>
 
             @if(session('success'))
