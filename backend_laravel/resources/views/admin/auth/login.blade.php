@@ -10,7 +10,9 @@
             'login' => 'Connexion',
             'login_text' => 'Accédez à votre espace administrateur ou expert.',
             'email' => 'Adresse email',
+            'email_placeholder' => 'Entrez votre adresse e-mail',
             'password' => 'Mot de passe',
+            'password_placeholder' => 'Entrez votre mot de passe',
             'forgot_password' => 'Mot de passe oublié ?',
             'login_button' => 'Se connecter',
             'qr_text' => 'Scanner pour accéder à l’inscription',
@@ -36,7 +38,9 @@
             'login' => 'Hiditra',
             'login_text' => 'Midira amin’ny sehatra admin na expert.',
             'email' => 'Adiresy email',
+            'email_placeholder' => 'Ampidiro ny adiresy email-nao',
             'password' => 'Tenimiafina',
+            'password_placeholder' => 'Ampidiro ny tenimiafinao',
             'forgot_password' => 'Adino ny tenimiafina ?',
             'login_button' => 'Hiditra',
             'qr_text' => 'Scan-na raha hiditra amin’ny fisoratana anarana',
@@ -978,24 +982,24 @@
 
     <div class="top-switch">
         <div class="switch-group">
-            <a href="{{ route('admin.lang', 'fr') }}"
+            <a href="{{ secure_url(route('admin.lang', 'fr', false)) }}"
                class="switch-btn {{ $locale === 'fr' ? 'active' : '' }}">
                 🇫🇷 FR
             </a>
 
-            <a href="{{ route('admin.lang', 'mg') }}"
+            <a href="{{ secure_url(route('admin.lang', 'mg', false)) }}"
                class="switch-btn {{ $locale === 'mg' ? 'active' : '' }}">
                 🇲🇬 MG
             </a>
         </div>
 
         <div class="switch-group">
-            <a href="{{ route('admin.theme', 'light') }}"
+            <a href="{{ secure_url(route('admin.theme', 'light', false)) }}"
                class="switch-btn {{ $theme === 'light' ? 'active' : '' }}">
                 ☀️ {{ $t['light'] }}
             </a>
 
-            <a href="{{ route('admin.theme', 'dark') }}"
+            <a href="{{ secure_url(route('admin.theme', 'dark', false)) }}"
                class="switch-btn {{ $theme === 'dark' ? 'active' : '' }}">
                 🌙 {{ $t['dark'] }}
             </a>
@@ -1018,11 +1022,11 @@
             @include('admin.auth.partials.project-video')
 
             <div class="auth-switch-buttons">
-                <a href="{{ url()->current() }}" class="auth-switch-btn login">
+                <a href="{{ secure_url('/admin/login') }}" class="auth-switch-btn login">
                     {{ $t['login_link'] }}
                 </a>
 
-                <a href="{{ route('admin.register') }}" class="auth-switch-btn register">
+                <a href="{{ secure_url(route('admin.register', [], false)) }}" class="auth-switch-btn register">
                     {{ $t['register_link'] }}
                 </a>
             </div>
@@ -1068,7 +1072,11 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.login.submit') }}" method="POST">
+                <form
+                    action="{{ secure_url(route('admin.login.submit', [], false)) }}"
+                    method="POST"
+                    autocomplete="on"
+                >
                     @csrf
 
                     <div class="mb-3">
@@ -1078,9 +1086,14 @@
 
                         <input
                             type="email"
+                            id="email"
                             name="email"
                             class="form-control"
                             value="{{ old('email') }}"
+                            placeholder="{{ $t['email_placeholder'] }}"
+                            autocomplete="username"
+                            inputmode="email"
+                            spellcheck="false"
                             required
                             autofocus
                         >
@@ -1093,14 +1106,17 @@
 
                         <input
                             type="password"
+                            id="password"
                             name="password"
                             class="form-control"
+                            placeholder="{{ $t['password_placeholder'] }}"
+                            autocomplete="current-password"
                             required
                         >
                     </div>
 
                     <div class="text-start mb-3">
-                        <a href="{{ route('admin.password.forgot') }}" class="text-decoration-none register-link">
+                        <a href="{{ secure_url(route('admin.password.forgot', [], false)) }}" class="text-decoration-none register-link">
                             {{ $t['forgot_password'] }}
                         </a>
                     </div>
@@ -1115,7 +1131,7 @@
                         </p>
 
                         <img
-                            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(route('admin.register')) }}"
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(secure_url(route('admin.register', [], false))) }}"
                             alt="QR Code inscription"
                         >
                     </div>
@@ -1126,7 +1142,7 @@
                         {{ $t['no_account'] }}
                     </span>
 
-                    <a href="{{ route('admin.register') }}" class="register-link">
+                    <a href="{{ secure_url(route('admin.register', [], false)) }}" class="register-link">
                         {{ $t['create_account'] }}
                     </a>
                 </div>
