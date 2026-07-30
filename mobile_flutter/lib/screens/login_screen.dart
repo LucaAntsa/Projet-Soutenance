@@ -357,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       const SizedBox(height: 2),
 
                                       Align(
-                                        alignment: Alignment.centerRight,
+                                        alignment: Alignment.centerLeft,
                                         child: TextButton.icon(
                                           onPressed: isLoading
                                               ? null
