@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
@@ -7,6 +8,7 @@ import '../theme/app_theme.dart';
 
 import 'home_screen.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 const Color _secondaryColor = Color(0xFF14B8A6);
 const Color _accentColor = Color(0xFFF59E0B);
@@ -59,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (firebaseToken != null) {
             await ApiService.saveDeviceToken(
               firebaseToken: firebaseToken,
-              deviceType: 'android',
+              deviceType: kIsWeb ? 'web' : 'android',
             );
           }
         } catch (e) {
@@ -209,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.14),
+                                      color: Colors.black.withValues(alpha: 0.14),
                                       blurRadius: 26,
                                       offset: const Offset(0, 12),
                                     ),
@@ -352,7 +354,43 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       ),
 
-                                      const SizedBox(height: 12),
+                                      const SizedBox(height: 2),
+
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: TextButton.icon(
+                                          onPressed: isLoading
+                                              ? null
+                                              : () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          ForgotPasswordScreen(
+                                                        initialEmail:
+                                                            emailController.text
+                                                                .trim(),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                          icon: const Icon(
+                                            Icons.help_outline_rounded,
+                                            size: 17,
+                                          ),
+                                          label: Text(
+                                            settings.isMalagasy
+                                                ? 'Adino ny tenimiafina ?'
+                                                : 'Mot de passe oublié ?',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 12.5,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 4),
 
                                       SizedBox(
                                         width: double.infinity,
@@ -477,14 +515,14 @@ class _AuthBackground extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: isDark
                     ? [
-                        const Color(0xFF0F172A).withOpacity(0.88),
-                        const Color(0xFF0F172A).withOpacity(0.82),
-                        const Color(0xFF0F766E).withOpacity(0.70),
+                        const Color(0xFF0F172A).withValues(alpha: 0.88),
+                        const Color(0xFF0F172A).withValues(alpha: 0.82),
+                        const Color(0xFF0F766E).withValues(alpha: 0.70),
                       ]
                     : [
-                        const Color(0xFF0F172A).withOpacity(0.58),
-                        const Color(0xFF2563EB).withOpacity(0.38),
-                        const Color(0xFF14B8A6).withOpacity(0.42),
+                        const Color(0xFF0F172A).withValues(alpha: 0.58),
+                        const Color(0xFF2563EB).withValues(alpha: 0.38),
+                        const Color(0xFF14B8A6).withValues(alpha: 0.42),
                       ],
               ),
             ),
@@ -496,7 +534,7 @@ class _AuthBackground extends StatelessWidget {
           right: -70,
           child: _DecorCircle(
             size: 190,
-            color: AppColors.primary.withOpacity(0.18),
+            color: AppColors.primary.withValues(alpha: 0.18),
           ),
         ),
 
@@ -505,7 +543,7 @@ class _AuthBackground extends StatelessWidget {
           left: -70,
           child: _DecorCircle(
             size: 210,
-            color: _secondaryColor.withOpacity(0.18),
+            color: _secondaryColor.withValues(alpha: 0.18),
           ),
         ),
 
@@ -514,7 +552,7 @@ class _AuthBackground extends StatelessWidget {
           left: 30,
           child: _DecorCircle(
             size: 70,
-            color: _accentColor.withOpacity(0.16),
+            color: _accentColor.withValues(alpha: 0.16),
           ),
         ),
       ],
@@ -607,7 +645,7 @@ class _SmallPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: isActive ? AppColors.primary : Colors.white.withOpacity(0.78),
+      color: isActive ? AppColors.primary : Colors.white.withValues(alpha: 0.78),
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
         borderRadius: BorderRadius.circular(999),
@@ -643,7 +681,7 @@ class _IconPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withOpacity(0.78),
+      color: Colors.white.withValues(alpha: 0.78),
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
         borderRadius: BorderRadius.circular(999),
@@ -690,7 +728,7 @@ class _LoginHero extends StatelessWidget {
         borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.24),
+            color: AppColors.primary.withValues(alpha: 0.24),
             blurRadius: 22,
             offset: const Offset(0, 12),
           ),
@@ -784,10 +822,10 @@ class _FeatureChip extends StatelessWidget {
         vertical: 5,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: Colors.white.withOpacity(0.22),
+          color: Colors.white.withValues(alpha: 0.22),
         ),
       ),
       child: Row(
@@ -833,10 +871,10 @@ class _MessageBox extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.09),
+        color: color.withValues(alpha: 0.09),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.20),
+          color: color.withValues(alpha: 0.20),
         ),
       ),
       child: Text(
