@@ -40,6 +40,10 @@ echo "Exécution des migrations..."
 
 php artisan migrate --force
 
+echo "Initialisation des données de base..."
+
+php artisan db:seed --force
+
 echo "Création du lien storage..."
 
 php artisan storage:link || true
