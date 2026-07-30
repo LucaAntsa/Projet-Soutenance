@@ -4,6 +4,11 @@ import '../services/api_service.dart';
 import '../services/app_settings_service.dart';
 import '../theme/app_theme.dart';
 
+const Color _secondaryColor = Color(0xFF14B8A6);
+const Color _accentColor = Color(0xFFF59E0B);
+const Color _darkCardColor = Color(0xFF1E293B);
+const Color _darkBackgroundColor = Color(0xFF0F172A);
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -17,11 +22,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   bool isLoading = false;
+  bool hidePassword = true;
   String? message;
   bool isSuccess = false;
 
   Future<void> register() async {
     final settings = AppSettingsService.instance;
+
+    if (nameController.text.trim().isEmpty ||
+        emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      setState(() {
+        isSuccess = false;
+        message = settings.isMalagasy
+            ? 'Fenoy tsara ny anarana, email ary tenimiafina.'
+            : 'Veuillez remplir le nom, l’email et le mot de passe.';
+      });
+      return;
+    }
 
     setState(() {
       isLoading = true;
@@ -68,175 +86,347 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  InputDecoration _inputDecoration({
+    required BuildContext context,
+    required String label,
+    required IconData icon,
+    Widget? suffixIcon,
+  }) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, size: 20),
+      suffixIcon: suffixIcon,
+      isDense: true,
+      filled: true,
+      fillColor: isDark ? _darkBackgroundColor : const Color(0xFFF8FAFC),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 10,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(
+          color: AppColors.primary,
+          width: 1.4,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = AppSettingsService.instance;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final double width = constraints.maxWidth;
-            final bool smallPhone = width < 360;
+            final bool smallPhone = constraints.maxWidth < 360;
 
-            return SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: Column(
-                  children: [
-                    _RegisterHeader(smallPhone: smallPhone),
+            return Stack(
+              children: [
+                const _AuthBackground(),
 
-                    Padding(
-                      padding: EdgeInsets.all(smallPhone ? 14 : 20),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxWidth: 480,
-                          ),
-                          child: Card(
-                            elevation: 4,
-                            shadowColor: Colors.black.withOpacity(0.08),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(22),
+                ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    scrollbars: false,
+                  ),
+                  child: SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          smallPhone ? 10 : 14,
+                          8,
+                          smallPhone ? 10 : 14,
+                          10,
+                        ),
+                        child: Column(
+                          children: [
+                            _TopActions(
+                              isDarkMode: settings.isDarkMode,
+                              isMalagasy: settings.isMalagasy,
+                              onBack: () => Navigator.pop(context),
+                              onFrench: () {
+                                settings.changeLanguage('fr');
+                                setState(() {});
+                              },
+                              onMalagasy: () {
+                                settings.changeLanguage('mg');
+                                setState(() {});
+                              },
+                              onTheme: () {
+                                settings.toggleTheme();
+                                setState(() {});
+                              },
                             ),
-                            child: Padding(
-                              padding: EdgeInsets.all(smallPhone ? 18 : 22),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    settings.tr('account_info'),
-                                    style: TextStyle(
-                                      color: isDark
-                                          ? AppColors.textLight
-                                          : AppColors.textDark,
-                                      fontSize: smallPhone ? 20 : 22,
-                                      fontWeight: FontWeight.bold,
+
+                            const SizedBox(height: 8),
+
+                            _RegisterHero(smallPhone: smallPhone),
+
+                            const SizedBox(height: 10),
+
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 420,
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      isDark ? _darkCardColor : Colors.white,
+                                  borderRadius: BorderRadius.circular(24),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.14),
+                                      blurRadius: 26,
+                                      offset: const Offset(0, 12),
                                     ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(
+                                    smallPhone ? 14 : 16,
                                   ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [
+                                                  AppColors.primary,
+                                                  _secondaryColor,
+                                                ],
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                            ),
+                                            child: const Icon(
+                                              Icons.person_add_alt_1,
+                                              color: Colors.white,
+                                              size: 22,
+                                            ),
+                                          ),
 
-                                  const SizedBox(height: 6),
+                                          const SizedBox(width: 10),
 
-                                  Text(
-                                    settings.tr('register_subtitle'),
-                                    style: TextStyle(
-                                      color: isDark
-                                          ? AppColors.textMutedDark
-                                          : AppColors.textMuted,
-                                      fontSize: 14,
-                                      height: 1.4,
-                                    ),
-                                  ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  settings.tr('account_info'),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    color: isDark
+                                                        ? AppColors.textLight
+                                                        : AppColors.textDark,
+                                                    fontSize:
+                                                        smallPhone ? 18 : 20,
+                                                    fontWeight:
+                                                        FontWeight.w900,
+                                                  ),
+                                                ),
 
-                                  const SizedBox(height: 22),
+                                                const SizedBox(height: 2),
 
-                                  if (message != null)
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(12),
-                                      margin: const EdgeInsets.only(bottom: 16),
-                                      decoration: BoxDecoration(
-                                        color: isSuccess
-                                            ? AppColors.success.withOpacity(0.08)
-                                            : AppColors.danger.withOpacity(0.08),
-                                        borderRadius: BorderRadius.circular(12),
+                                                Text(
+                                                  settings.tr(
+                                                    'register_subtitle',
+                                                  ),
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    color: isDark
+                                                        ? AppColors
+                                                            .textMutedDark
+                                                        : AppColors.textMuted,
+                                                    fontSize: 12,
+                                                    height: 1.25,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      child: Text(
-                                        message!,
-                                        style: TextStyle(
-                                          color: isSuccess
-                                              ? AppColors.success
-                                              : AppColors.danger,
-                                          fontWeight: FontWeight.w500,
+
+                                      const SizedBox(height: 12),
+
+                                      if (message != null)
+                                        _MessageBox(
+                                          message: message!,
+                                          isSuccess: isSuccess,
+                                        ),
+
+                                      TextField(
+                                        controller: nameController,
+                                        textInputAction: TextInputAction.next,
+                                        style: const TextStyle(fontSize: 14),
+                                        decoration: _inputDecoration(
+                                          context: context,
+                                          label: settings.tr('full_name'),
+                                          icon: Icons.person_outline,
                                         ),
                                       ),
-                                    ),
 
-                                  TextField(
-                                    controller: nameController,
-                                    textInputAction: TextInputAction.next,
-                                    decoration: InputDecoration(
-                                      labelText: settings.tr('full_name'),
-                                      prefixIcon:
-                                          const Icon(Icons.person_outline),
-                                    ),
-                                  ),
+                                      const SizedBox(height: 8),
 
-                                  const SizedBox(height: 16),
-
-                                  TextField(
-                                    controller: emailController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    textInputAction: TextInputAction.next,
-                                    decoration: InputDecoration(
-                                      labelText: settings.tr('email_address'),
-                                      prefixIcon:
-                                          const Icon(Icons.email_outlined),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 16),
-
-                                  TextField(
-                                    controller: passwordController,
-                                    obscureText: true,
-                                    textInputAction: TextInputAction.done,
-                                    onSubmitted: (_) {
-                                      if (!isLoading) {
-                                        register();
-                                      }
-                                    },
-                                    decoration: InputDecoration(
-                                      labelText: settings.tr('password'),
-                                      prefixIcon:
-                                          const Icon(Icons.lock_outline),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 22),
-
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed: isLoading ? null : register,
-                                      child: isLoading
-                                          ? const SizedBox(
-                                              width: 22,
-                                              height: 22,
-                                              child: CircularProgressIndicator(
-                                                color: Colors.white,
-                                                strokeWidth: 2,
-                                              ),
-                                            )
-                                          : Text(settings.tr('register_button')),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 16),
-
-                                  Center(
-                                    child: TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text(
-                                        settings.tr('already_have_account'),
+                                      TextField(
+                                        controller: emailController,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
+                                        textInputAction: TextInputAction.next,
+                                        autofillHints: const [
+                                          AutofillHints.email,
+                                        ],
+                                        style: const TextStyle(fontSize: 14),
+                                        decoration: _inputDecoration(
+                                          context: context,
+                                          label: settings.tr('email_address'),
+                                          icon: Icons.email_outlined,
+                                        ),
                                       ),
-                                    ),
+
+                                      const SizedBox(height: 8),
+
+                                      TextField(
+                                        controller: passwordController,
+                                        obscureText: hidePassword,
+                                        textInputAction: TextInputAction.done,
+                                        autofillHints: const [
+                                          AutofillHints.newPassword,
+                                        ],
+                                        style: const TextStyle(fontSize: 14),
+                                        onSubmitted: (_) {
+                                          if (!isLoading) {
+                                            register();
+                                          }
+                                        },
+                                        decoration: _inputDecoration(
+                                          context: context,
+                                          label: settings.tr('password'),
+                                          icon: Icons.lock_outline,
+                                          suffixIcon: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                hidePassword = !hidePassword;
+                                              });
+                                            },
+                                            icon: Icon(
+                                              hidePassword
+                                                  ? Icons
+                                                      .visibility_off_outlined
+                                                  : Icons.visibility_outlined,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 12),
+
+                                      SizedBox(
+                                        width: double.infinity,
+                                        height: 44,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                AppColors.primary,
+                                            foregroundColor: Colors.white,
+                                            elevation: 0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                            ),
+                                          ),
+                                          onPressed:
+                                              isLoading ? null : register,
+                                          child: isLoading
+                                              ? const SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                    strokeWidth: 2,
+                                                  ),
+                                                )
+                                              : Text(
+                                                  settings.tr(
+                                                    'register_button',
+                                                  ),
+                                                  style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w800,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 8),
+
+                                      Center(
+                                        child: TextButton.icon(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          icon: const Icon(
+                                            Icons.arrow_back,
+                                            size: 16,
+                                          ),
+                                          label: Text(
+                                            settings.tr(
+                                              'already_have_account',
+                                            ),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             );
           },
         ),
@@ -245,10 +435,227 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-class _RegisterHeader extends StatelessWidget {
+class _AuthBackground extends StatelessWidget {
+  const _AuthBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/auth-family-bg.png',
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
+        ),
+
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: isDark
+                    ? [
+                        const Color(0xFF0F172A).withOpacity(0.88),
+                        const Color(0xFF0F172A).withOpacity(0.82),
+                        const Color(0xFF0F766E).withOpacity(0.70),
+                      ]
+                    : [
+                        const Color(0xFF0F172A).withOpacity(0.58),
+                        const Color(0xFF2563EB).withOpacity(0.38),
+                        const Color(0xFF14B8A6).withOpacity(0.42),
+                      ],
+              ),
+            ),
+          ),
+        ),
+
+        Positioned(
+          top: -80,
+          right: -70,
+          child: _DecorCircle(
+            size: 190,
+            color: AppColors.primary.withOpacity(0.18),
+          ),
+        ),
+
+        Positioned(
+          bottom: -90,
+          left: -70,
+          child: _DecorCircle(
+            size: 210,
+            color: _secondaryColor.withOpacity(0.18),
+          ),
+        ),
+
+        Positioned(
+          top: 230,
+          left: 30,
+          child: _DecorCircle(
+            size: 70,
+            color: _accentColor.withOpacity(0.16),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DecorCircle extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _DecorCircle({
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+class _TopActions extends StatelessWidget {
+  final bool isDarkMode;
+  final bool isMalagasy;
+  final VoidCallback onBack;
+  final VoidCallback onFrench;
+  final VoidCallback onMalagasy;
+  final VoidCallback onTheme;
+
+  const _TopActions({
+    required this.isDarkMode,
+    required this.isMalagasy,
+    required this.onBack,
+    required this.onFrench,
+    required this.onMalagasy,
+    required this.onTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _IconPill(
+          icon: Icons.arrow_back,
+          onTap: onBack,
+        ),
+
+        const Spacer(),
+
+        _SmallPill(
+          text: 'FR',
+          icon: '🇫🇷',
+          isActive: !isMalagasy,
+          onTap: onFrench,
+        ),
+
+        const SizedBox(width: 6),
+
+        _SmallPill(
+          text: 'MG',
+          icon: '🇲🇬',
+          isActive: isMalagasy,
+          onTap: onMalagasy,
+        ),
+
+        const SizedBox(width: 6),
+
+        _IconPill(
+          icon: isDarkMode ? Icons.light_mode : Icons.dark_mode,
+          onTap: onTheme,
+        ),
+      ],
+    );
+  }
+}
+
+class _SmallPill extends StatelessWidget {
+  final String text;
+  final String icon;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _SmallPill({
+    required this.text,
+    required this.icon,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isActive ? AppColors.primary : Colors.white.withOpacity(0.78),
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 9,
+            vertical: 6,
+          ),
+          child: Text(
+            '$icon $text',
+            style: TextStyle(
+              color: isActive ? Colors.white : AppColors.primary,
+              fontSize: 11,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IconPill extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _IconPill({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withOpacity(0.78),
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(7),
+          child: Icon(
+            icon,
+            size: 17,
+            color: AppColors.primary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RegisterHero extends StatelessWidget {
   final bool smallPhone;
 
-  const _RegisterHeader({
+  const _RegisterHero({
     required this.smallPhone,
   });
 
@@ -258,97 +665,139 @@ class _RegisterHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(
-        smallPhone ? 12 : 18,
-        smallPhone ? 18 : 24,
-        smallPhone ? 18 : 24,
-        smallPhone ? 32 : 38,
+      constraints: const BoxConstraints(
+        maxWidth: 420,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(32),
-          bottomRight: Radius.circular(32),
+      padding: EdgeInsets.all(
+        smallPhone ? 14 : 16,
+      ),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            AppColors.primary,
+            _secondaryColor,
+          ],
         ),
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.24),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Row(
-            children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
-              ),
-
-              const Spacer(),
-
-              _HeaderButton(
-                text: 'FR',
-                isActive: !settings.isMalagasy,
-                onTap: () {
-                  settings.changeLanguage('fr');
-                },
-              ),
-
-              const SizedBox(width: 8),
-
-              _HeaderButton(
-                text: 'MG',
-                isActive: settings.isMalagasy,
-                onTap: () {
-                  settings.changeLanguage('mg');
-                },
-              ),
-
-              const SizedBox(width: 8),
-
-              _ThemeButton(
-                isDarkMode: settings.isDarkMode,
-                onTap: () {
-                  settings.toggleTheme();
-                },
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          CircleAvatar(
-            radius: smallPhone ? 36 : 42,
-            backgroundColor: Colors.white,
+          Container(
+            width: smallPhone ? 54 : 60,
+            height: smallPhone ? 54 : 60,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Icon(
               Icons.person_add_alt_1,
-              size: smallPhone ? 40 : 46,
+              size: smallPhone ? 30 : 34,
               color: AppColors.primary,
-            ),
-          ),
-
-          const SizedBox(height: 18),
-
-          Text(
-            settings.tr('create_account'),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: smallPhone ? 23 : 26,
-              fontWeight: FontWeight.bold,
             ),
           ),
 
           const SizedBox(height: 8),
 
           Text(
+            settings.tr('create_account'),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: smallPhone ? 19 : 21,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
             settings.tr('parent_registration'),
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white70,
-              fontSize: 14,
-              height: 1.4,
+              fontSize: 12,
+              height: 1.25,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              _FeatureChip(
+                icon: Icons.family_restroom,
+                text: settings.isMalagasy ? 'Ray aman-dreny' : 'Parent',
+              ),
+              _FeatureChip(
+                icon: Icons.menu_book_outlined,
+                text: settings.isMalagasy ? 'Fianarana' : 'Apprentissage',
+              ),
+              _FeatureChip(
+                icon: Icons.verified_user_outlined,
+                text: settings.isMalagasy ? 'Azo antoka' : 'Sécurisé',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FeatureChip extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _FeatureChip({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 5,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.22),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 13,
+            color: Colors.white,
+          ),
+
+          const SizedBox(width: 5),
+
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
@@ -357,68 +806,36 @@ class _RegisterHeader extends StatelessWidget {
   }
 }
 
-class _HeaderButton extends StatelessWidget {
-  final String text;
-  final bool isActive;
-  final VoidCallback onTap;
+class _MessageBox extends StatelessWidget {
+  final String message;
+  final bool isSuccess;
 
-  const _HeaderButton({
-    required this.text,
-    required this.isActive,
-    required this.onTap,
+  const _MessageBox({
+    required this.message,
+    required this.isSuccess,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 7,
-        ),
-        decoration: BoxDecoration(
-          color: isActive ? Colors.white : Colors.white.withOpacity(0.16),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isActive ? AppColors.primary : Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
+    final Color color = isSuccess ? AppColors.success : AppColors.danger;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.09),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.20),
         ),
       ),
-    );
-  }
-}
-
-class _ThemeButton extends StatelessWidget {
-  final bool isDarkMode;
-  final VoidCallback onTap;
-
-  const _ThemeButton({
-    required this.isDarkMode,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(7),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.16),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Icon(
-          isDarkMode ? Icons.light_mode : Icons.dark_mode,
-          color: Colors.white,
-          size: 18,
+      child: Text(
+        message,
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

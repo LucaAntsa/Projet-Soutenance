@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.88.41:8000/api';
+  static const String baseUrl = 'https://education-familiale-api.onrender.com/api';
 
   static Future<String> getCurrentLang() async {
     final prefs = await SharedPreferences.getInstance();

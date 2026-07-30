@@ -12,9 +12,14 @@ import 'quizzes_screen.dart';
 import 'progression_screen.dart';
 import 'scores_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   Future<void> logout(BuildContext context) async {
     await ApiService.logout();
 
@@ -151,7 +156,6 @@ class HomeScreen extends StatelessWidget {
 
   void showSettingsBottomSheet(BuildContext context) {
     final settings = AppSettingsService.instance;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
@@ -160,21 +164,23 @@ class HomeScreen extends StatelessWidget {
         return AnimatedBuilder(
           animation: settings,
           builder: (context, _) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+
             return Container(
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkCard : Colors.white,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(30),
+                  top: Radius.circular(28),
                 ),
               ),
-              padding: const EdgeInsets.fromLTRB(22, 14, 22, 30),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Container(
-                      width: 46,
+                      width: 44,
                       height: 5,
                       decoration: BoxDecoration(
                         color: isDark
@@ -185,24 +191,25 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 18),
 
                   Row(
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
                           gradient: AppGradients.primaryGradient,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(
                           Icons.tune,
                           color: Colors.white,
+                          size: 22,
                         ),
                       ),
 
-                      const SizedBox(width: 14),
+                      const SizedBox(width: 12),
 
                       Expanded(
                         child: Text(
@@ -213,13 +220,13 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
 
                   _SettingSectionTitle(
                     title: settings.tr('language'),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
                   Row(
                     children: [
@@ -228,47 +235,57 @@ class HomeScreen extends StatelessWidget {
                           label: settings.tr('french'),
                           selected: !settings.isMalagasy,
                           onTap: () async {
-                            final navigator = Navigator.of(context);
                             await settings.changeLanguage('fr');
-                            navigator.pop();
+
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                         ),
                       ),
+
                       const SizedBox(width: 10),
+
                       Expanded(
                         child: _ChoiceButton(
                           label: settings.tr('malagasy'),
                           selected: settings.isMalagasy,
                           onTap: () async {
-                            final navigator = Navigator.of(context);
                             await settings.changeLanguage('mg');
-                            navigator.pop();
+
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 18),
 
                   _SettingSectionTitle(
                     title: settings.tr('theme'),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
                   SizedBox(
                     width: double.infinity,
+                    height: 44,
                     child: ElevatedButton.icon(
                       onPressed: () async {
-                        final navigator = Navigator.of(context);
                         await settings.toggleTheme();
-                        navigator.pop();
+
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
                       },
                       icon: Icon(
                         settings.isDarkMode
                             ? Icons.light_mode_rounded
                             : Icons.dark_mode_rounded,
+                        size: 20,
                       ),
                       label: Text(
                         settings.isDarkMode
@@ -289,159 +306,177 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = AppSettingsService.instance;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final double width = constraints.maxWidth;
+    return AnimatedBuilder(
+      animation: settings,
+      builder: (context, _) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
 
-            final bool smallPhone = width < 380;
-            final bool tabletOrWeb = width >= 760;
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double width = constraints.maxWidth;
 
-            final int crossAxisCount = tabletOrWeb
-                ? 3
-                : smallPhone
-                    ? 1
-                    : 2;
+                final bool smallPhone = width < 380;
+                final bool tabletOrWeb = width >= 760;
 
-            final double childAspectRatio = tabletOrWeb
-                ? 1.18
-                : smallPhone
-                    ? 3.25
-                    : 1.05;
+                final int crossAxisCount = tabletOrWeb
+                    ? 3
+                    : smallPhone
+                        ? 1
+                        : 2;
 
-            final double horizontalPadding = tabletOrWeb ? 28 : 16;
+                // Une hauteur fixe est plus fiable qu'un childAspectRatio
+                // pour éviter les débordements verticaux sur le Web, tablette
+                // et téléphone, notamment avec les traductions.
+                final double cardExtent = smallPhone
+                    ? 82
+                    : tabletOrWeb
+                        ? 170
+                        : 176;
 
-            return CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: _Header(
-                    onNotificationTap: () => activateNotifications(context),
-                    onSettingsTap: () => showSettingsBottomSheet(context),
-                    onLogoutTap: () => logout(context),
+                final double horizontalPadding = tabletOrWeb ? 22 : 12;
+
+                return ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    scrollbars: false,
                   ),
-                ),
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: _Header(
+                          onNotificationTap: () =>
+                              activateNotifications(context),
+                          onSettingsTap: () =>
+                              showSettingsBottomSheet(context),
+                          onLogoutTap: () => logout(context),
+                        ),
+                      ),
 
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      18,
-                      horizontalPadding,
-                      4,
-                    ),
-                    child: _SectionHeader(
-                      title: settings.tr('parent_space'),
-                      subtitle: settings.isMalagasy
-                          ? 'Safidio izay tianao hatao anio'
-                          : 'Choisissez une action pour commencer',
-                    ),
-                  ),
-                ),
-
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(
-                    horizontalPadding,
-                    12,
-                    horizontalPadding,
-                    18,
-                  ),
-                  sliver: SliverGrid(
-                    delegate: SliverChildListDelegate(
-                      [
-                        HomeCard(
-                          icon: Icons.menu_book_rounded,
-                          title: settings.tr('modules'),
-                          subtitle: settings.tr('modules_subtitle'),
-                          color: AppColors.primary,
-                          gradient: AppGradients.blueGradient,
-                          onTap: () => openModules(context),
-                        ),
-                        HomeCard(
-                          icon: Icons.lightbulb_rounded,
-                          title: settings.tr('conseils'),
-                          subtitle: settings.tr('conseils_subtitle'),
-                          color: AppColors.accent,
-                          gradient: AppGradients.warmGradient,
-                          onTap: () => openConseils(context),
-                        ),
-                        HomeCard(
-                          icon: Icons.quiz_rounded,
-                          title: settings.tr('quiz'),
-                          subtitle: settings.tr('quiz_subtitle'),
-                          color: const Color(0xFF9333EA),
-                          gradient: AppGradients.purpleGradient,
-                          onTap: () => openQuizzes(context),
-                        ),
-                        HomeCard(
-                          icon: Icons.trending_up_rounded,
-                          title: settings.tr('progression'),
-                          subtitle: settings.tr('progression_subtitle'),
-                          color: AppColors.success,
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF22C55E),
-                              Color(0xFF14B8A6),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            horizontalPadding,
+                            12,
+                            horizontalPadding,
+                            2,
                           ),
-                          onTap: () => openProgression(context),
-                        ),
-                        HomeCard(
-                          icon: Icons.emoji_events_rounded,
-                          title: settings.tr('scores'),
-                          subtitle: settings.tr('scores_subtitle'),
-                          color: const Color(0xFFF97316),
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFF97316),
-                              Color(0xFFEF4444),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                          child: _SectionHeader(
+                            title: settings.tr('parent_space'),
+                            subtitle: settings.isMalagasy
+                                ? 'Safidio izay tianao hatao anio'
+                                : 'Choisissez une action pour commencer',
                           ),
-                          onTap: () => openScores(context),
                         ),
-                      ],
-                    ),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 14,
-                      mainAxisSpacing: 14,
-                      childAspectRatio: childAspectRatio,
-                    ),
-                  ),
-                ),
+                      ),
 
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      0,
-                      horizontalPadding,
-                      26,
-                    ),
-                    child: _InfoBanner(
-                      isDark: isDark,
-                      title: settings.isMalagasy
-                          ? 'Fanabeazana manomboka ao an-tokantrano'
-                          : 'L’éducation commence à la maison',
-                      subtitle: settings.isMalagasy
-                          ? 'Araho tsikelikely ireo votoaty hanatsarana ny fifandraisana ao amin’ny fianakaviana.'
-                          : 'Avancez progressivement avec des contenus simples pour renforcer la relation familiale.',
-                    ),
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding,
+                          8,
+                          horizontalPadding,
+                          12,
+                        ),
+                        sliver: SliverGrid(
+                          delegate: SliverChildListDelegate(
+                            [
+                              HomeCard(
+                                icon: Icons.menu_book_rounded,
+                                title: settings.tr('modules'),
+                                subtitle: settings.tr('modules_subtitle'),
+                                color: AppColors.primary,
+                                gradient: AppGradients.blueGradient,
+                                onTap: () => openModules(context),
+                              ),
+                              HomeCard(
+                                icon: Icons.lightbulb_rounded,
+                                title: settings.tr('conseils'),
+                                subtitle: settings.tr('conseils_subtitle'),
+                                color: AppColors.accent,
+                                gradient: AppGradients.warmGradient,
+                                onTap: () => openConseils(context),
+                              ),
+                              HomeCard(
+                                icon: Icons.quiz_rounded,
+                                title: settings.tr('quiz'),
+                                subtitle: settings.tr('quiz_subtitle'),
+                                color: const Color(0xFF9333EA),
+                                gradient: AppGradients.purpleGradient,
+                                onTap: () => openQuizzes(context),
+                              ),
+                              HomeCard(
+                                icon: Icons.trending_up_rounded,
+                                title: settings.tr('progression'),
+                                subtitle:
+                                    settings.tr('progression_subtitle'),
+                                color: AppColors.success,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF22C55E),
+                                    Color(0xFF14B8A6),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                onTap: () => openProgression(context),
+                              ),
+                              HomeCard(
+                                icon: Icons.emoji_events_rounded,
+                                title: settings.tr('scores'),
+                                subtitle: settings.tr('scores_subtitle'),
+                                color: const Color(0xFFF97316),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFF97316),
+                                    Color(0xFFEF4444),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                onTap: () => openScores(context),
+                              ),
+                            ],
+                          ),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            mainAxisExtent: cardExtent,
+                          ),
+                        ),
+                      ),
+
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            horizontalPadding,
+                            0,
+                            horizontalPadding,
+                            20,
+                          ),
+                          child: _InfoBanner(
+                            isDark: isDark,
+                            title: settings.isMalagasy
+                                ? 'Fanabeazana manomboka ao an-tokantrano'
+                                : 'L’éducation commence à la maison',
+                            subtitle: settings.isMalagasy
+                                ? 'Araho tsikelikely ireo votoaty hanatsarana ny fifandraisana ao amin’ny fianakaviana.'
+                                : 'Avancez progressivement avec des contenus simples pour renforcer la relation familiale.',
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -467,16 +502,16 @@ class _Header extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(
-        smallPhone ? 16 : 22,
-        18,
-        smallPhone ? 16 : 22,
-        smallPhone ? 24 : 30,
+        smallPhone ? 12 : 18,
+        12,
+        smallPhone ? 12 : 18,
+        smallPhone ? 16 : 20,
       ),
       decoration: const BoxDecoration(
         gradient: AppGradients.primaryGradient,
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(34),
-          bottomRight: Radius.circular(34),
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
         ),
       ),
       child: Stack(
@@ -485,15 +520,16 @@ class _Header extends StatelessWidget {
             right: -45,
             top: -45,
             child: _DecorativeCircle(
-              size: 150,
+              size: 140,
               opacity: 0.13,
             ),
           ),
+
           Positioned(
             left: -55,
             bottom: -70,
             child: _DecorativeCircle(
-              size: 170,
+              size: 155,
               opacity: 0.10,
             ),
           ),
@@ -504,27 +540,27 @@ class _Header extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: smallPhone ? 48 : 54,
-                    height: smallPhone ? 48 : 54,
+                    width: smallPhone ? 40 : 46,
+                    height: smallPhone ? 40 : 46,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(19),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.10),
-                          blurRadius: 18,
-                          offset: const Offset(0, 8),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
                     child: Icon(
                       Icons.family_restroom_rounded,
                       color: AppColors.primary,
-                      size: smallPhone ? 28 : 32,
+                      size: smallPhone ? 23 : 26,
                     ),
                   ),
 
-                  const SizedBox(width: 13),
+                  const SizedBox(width: 10),
 
                   Expanded(
                     child: Column(
@@ -536,17 +572,21 @@ class _Header extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: smallPhone ? 17 : 20,
+                            fontSize: smallPhone ? 15.5 : 18,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -0.2,
                           ),
                         ),
-                        const SizedBox(height: 4),
+
+                        const SizedBox(height: 3),
+
                         Text(
                           settings.tr('parent_space'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Colors.white70,
-                            fontSize: 13,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -559,14 +599,14 @@ class _Header extends StatelessWidget {
                     onTap: onNotificationTap,
                   ),
 
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 5),
 
                   _HeaderIconButton(
                     icon: Icons.settings_rounded,
                     onTap: onSettingsTap,
                   ),
 
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 5),
 
                   _HeaderIconButton(
                     icon: Icons.logout_rounded,
@@ -575,12 +615,12 @@ class _Header extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: smallPhone ? 22 : 28),
+              SizedBox(height: smallPhone ? 14 : 18),
 
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 7,
+                  horizontal: 10,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.16),
@@ -595,32 +635,36 @@ class _Header extends StatelessWidget {
                       : 'Accompagnement parental',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
 
               Text(
                 settings.tr('welcome'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: smallPhone ? 25 : 29,
+                  fontSize: smallPhone ? 21 : 24,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
 
               Text(
                 settings.tr('home_description'),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.82),
-                  fontSize: smallPhone ? 13.5 : 14.5,
-                  height: 1.45,
+                  fontSize: smallPhone ? 12.5 : 13,
+                  height: 1.35,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -645,17 +689,17 @@ class _HeaderIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white.withOpacity(0.16),
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(13),
       child: InkWell(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(13),
         onTap: onTap,
         child: SizedBox(
-          width: 39,
-          height: 39,
+          width: 34,
+          height: 34,
           child: Icon(
             icon,
             color: Colors.white,
-            size: 21,
+            size: 18,
           ),
         ),
       ),
@@ -701,15 +745,15 @@ class _SectionHeader extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 5,
-          height: 38,
+          width: 4,
+          height: 32,
           decoration: BoxDecoration(
             gradient: AppGradients.primaryGradient,
             borderRadius: BorderRadius.circular(999),
           ),
         ),
 
-        const SizedBox(width: 12),
+        const SizedBox(width: 10),
 
         Expanded(
           child: Column(
@@ -719,14 +763,16 @@ class _SectionHeader extends StatelessWidget {
                 title,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 3),
+
+              const SizedBox(height: 2),
+
               Text(
                 subtitle,
                 style: TextStyle(
                   color: isDark
                       ? AppColors.textMutedDark
                       : AppColors.textMuted,
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -763,18 +809,19 @@ class HomeCard extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
-      elevation: isDark ? 1 : 5,
-      shadowColor: Colors.black.withOpacity(isDark ? 0.18 : 0.08),
+      margin: EdgeInsets.zero,
+      elevation: isDark ? 1 : 4,
+      shadowColor: Colors.black.withOpacity(isDark ? 0.16 : 0.07),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.all(smallPhone ? 14 : 17),
+          padding: EdgeInsets.all(smallPhone ? 10 : 12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: isDark ? AppColors.borderDark : AppColors.borderLight,
               width: 0.7,
@@ -822,31 +869,33 @@ class _VerticalCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = AppSettingsService.instance;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 54,
-          height: 54,
+          width: 38,
+          height: 38,
           decoration: BoxDecoration(
             gradient: gradient,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(13),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.24),
-                blurRadius: 14,
-                offset: const Offset(0, 7),
+                color: color.withOpacity(0.18),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
           child: Icon(
             icon,
             color: Colors.white,
-            size: 29,
+            size: 21,
           ),
         ),
 
-        const Spacer(),
+        const SizedBox(height: 10),
 
         Text(
           title,
@@ -854,43 +903,56 @@ class _VerticalCardContent extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: isDark ? AppColors.textLight : AppColors.textDark,
-            fontSize: 17,
+            fontSize: 15,
             fontWeight: FontWeight.w900,
             letterSpacing: -0.2,
           ),
         ),
 
-        const SizedBox(height: 5),
+        const SizedBox(height: 3),
 
-        Text(
-          subtitle,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: isDark ? AppColors.textMutedDark : AppColors.textMuted,
-            fontSize: 13,
-            height: 1.35,
-            fontWeight: FontWeight.w500,
+        Expanded(
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              subtitle,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color:
+                    isDark ? AppColors.textMutedDark : AppColors.textMuted,
+                fontSize: 11.5,
+                height: 1.25,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 6),
 
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              AppSettingsService.instance.isMalagasy ? 'Hijery' : 'Ouvrir',
-              style: TextStyle(
-                color: color,
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
+            Flexible(
+              child: Text(
+                settings.isMalagasy ? 'Hijery' : 'Ouvrir',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
+
             const SizedBox(width: 4),
+
             Icon(
               Icons.arrow_forward_rounded,
               color: color,
-              size: 16,
+              size: 15,
             ),
           ],
         ),
@@ -921,20 +983,20 @@ class _HorizontalCardContent extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 52,
-          height: 52,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             gradient: gradient,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(
             icon,
             color: Colors.white,
-            size: 28,
+            size: 22,
           ),
         ),
 
-        const SizedBox(width: 13),
+        const SizedBox(width: 10),
 
         Expanded(
           child: Column(
@@ -947,22 +1009,22 @@ class _HorizontalCardContent extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: isDark ? AppColors.textLight : AppColors.textDark,
-                  fontSize: 16.5,
+                  fontSize: 14.5,
                   fontWeight: FontWeight.w900,
                 ),
               ),
 
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
 
               Text(
                 subtitle,
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color:
                       isDark ? AppColors.textMutedDark : AppColors.textMuted,
-                  fontSize: 12.5,
-                  height: 1.3,
+                  fontSize: 11.5,
+                  height: 1.2,
                 ),
               ),
             ],
@@ -972,7 +1034,7 @@ class _HorizontalCardContent extends StatelessWidget {
         Icon(
           Icons.arrow_forward_ios_rounded,
           color: color,
-          size: 15,
+          size: 13,
         ),
       ],
     );
@@ -993,39 +1055,39 @@ class _InfoBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isDark ? AppColors.borderDark : AppColors.borderLight,
         ),
         boxShadow: [
           if (!isDark)
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
             ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 52,
-            height: 52,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
               color: AppColors.secondary.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
               Icons.favorite_rounded,
               color: AppColors.secondary,
-              size: 28,
+              size: 23,
             ),
           ),
 
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
 
           Expanded(
             child: Column(
@@ -1033,20 +1095,26 @@ class _InfoBanner extends StatelessWidget {
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: isDark ? AppColors.textLight : AppColors.textDark,
-                    fontSize: 15.5,
+                    fontSize: 14,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                const SizedBox(height: 5),
+
+                const SizedBox(height: 4),
+
                 Text(
                   subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color:
                         isDark ? AppColors.textMutedDark : AppColors.textMuted,
-                    fontSize: 13,
-                    height: 1.4,
+                    fontSize: 12,
+                    height: 1.3,
                   ),
                 ),
               ],
@@ -1090,12 +1158,12 @@ class _ChoiceButton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(15),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 13,
+          horizontal: 12,
+          vertical: 11,
         ),
         decoration: BoxDecoration(
           color: selected
@@ -1103,7 +1171,7 @@ class _ChoiceButton extends StatelessWidget {
               : isDark
                   ? AppColors.darkBackground
                   : AppColors.background,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: selected
                 ? AppColors.primary
@@ -1122,6 +1190,7 @@ class _ChoiceButton extends StatelessWidget {
                       ? AppColors.textLight
                       : AppColors.textDark,
               fontWeight: FontWeight.w800,
+              fontSize: 13,
             ),
           ),
         ),
